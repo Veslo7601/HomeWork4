@@ -1,26 +1,21 @@
 """All function """
 
-def input_error(default_value=None):
-    """Error_decorator"""
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            try:
-                result = func(*args, **kwargs)
-                return result
-            except KeyError:
-                print("Enter the correct command")
-                return default_value
-            except ValueError:
-                print("Please enter a valid name and phone number")
-                return default_value
-            except IndexError:
-                print("Enter the correct company, name and phone number")
-                return default_value
-            except Exception as e:
-                print(f"{e}")
-                return default_value
-        return wrapper
-    return decorator
+
+def decorator(func):
+    """Decorator"""
+    def wrapper(*args, **kwargs):
+        try:
+            result = func(*args, **kwargs)
+            return result
+        except KeyError:
+            return "Enter the correct command"
+        except ValueError:
+            return "Please enter a valid name and phone number"
+        except IndexError:
+            return "Enter the correct command, name and phone number"
+        except Exception as e:
+            return f"{e}"
+    return wrapper
 
 contact_dict = {}
 
@@ -61,6 +56,7 @@ def command_good_bye():
     ACTIVE_BOT = False
     return"Good Bye!"
 
+
 def get_command(command):
     """Function command bot"""
     return command_list[command]
@@ -78,25 +74,24 @@ command_list = {
 
 ACTIVE_BOT = False
 
-@input_error(default_value="")
-def main():
-    """Function bot"""
-    user_input = input("Enter the command: ").lower()
+@decorator
+def command_parser(user_input):
+    """Сommand parser"""
     if user_input in ["show all", "hello", "good bye", "close", "exit"]:
-        print(get_command(user_input)())
+        return get_command(user_input)()
     else:
         user_input = user_input.split()
         if user_input[0] == "phone":
-            print(get_command(user_input[0])(user_input[1]))
+            return get_command(user_input[0])(user_input[1])
         else:
-            print(get_command(user_input[0])(user_input[1],int(user_input[2])))
+            return get_command(user_input[0])(user_input[1],int(user_input[2]))
 
-def phone_bot():
+def main():
     """Bot"""
     global ACTIVE_BOT
     ACTIVE_BOT = True
-
     while ACTIVE_BOT:
-        main()
+        user_input = input("Enter the command: ").lower().strip()
+        print(command_parser(user_input))
 
-phone_bot()
+main()
